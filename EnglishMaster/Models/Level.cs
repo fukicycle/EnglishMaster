@@ -3,16 +3,15 @@ using System.Collections.Generic;
 
 namespace EnglishMaster.Models
 {
-    public partial class PartOfSpeech
+    public partial class Level
     {
-        public PartOfSpeech()
+        public Level()
         {
             Vocabularies = new HashSet<Vocabulary>();
         }
 
         public long Id { get; set; }
         public string Name { get; set; }
-        public string InJapanese { get; set; }
 
         public virtual ICollection<Vocabulary> Vocabularies { get; set; }
     }

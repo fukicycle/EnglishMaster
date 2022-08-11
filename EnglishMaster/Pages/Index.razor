@@ -1,5 +1,200 @@
 ﻿@page "/"
-@using EnglishMaster.Models
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.EntityFrameworkCore
+@using Models
 @inject DB db
+@inject NavigationManager navigationManager
+<PageTitle>Main</PageTitle>
+<div class="text-center">
+    <div class="m-auto" style="max-width:500px;">
+        <div class="input-group">
+            <span class="input-group-text col-4">モード</span>
+            <select class="form-select" @onchange="ModeSpinnerSelectChanged">
+                @foreach (var item in ModeList)
+                {
+                    <option>@item</option>
+                }
+            </select>
+        </div>
+        <div class="input-group">
+            <span class="input-group-text col-4">レベル</span>
+            <select class="form-select" @onchange="LevelSpinnerSelectChanged">
+                @foreach (var item in LevelList)
+                {
+                    <option>@item.Name</option>
+                }
+            </select>
+        </div>
+        <div class="input-group">
+            <span class="input-group-text col-4">品詞</span>
+            <select class="form-select" @onchange="PartOfSpeechSpinnerSelectChanged">
+                @foreach (var item in PartOfSpeechList)
+                {
+                    <option>@item.InJapanese</option>
+                }
+            </select>
+        </div>
+        @if (IsFinish)
+        {
+            <div class="row m-1">
+                <p class="text-success h1">All done!</p>
+                <button type="button" class="btn btn-primary" @onclick="ReturnTopButtonOnClick">Return top</button>
+            </div>
+        }
+        else
+        {
+            <p class="text-center h1 card p-3">@Question.Word.Word1</p>
+            <div>
+                @foreach (var item in Question.Answers)
+                {
+                    <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
+                }
+            </div>
+            @if (IsValid == true)
+            {
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Correct!</h4>
+                    <p>この単語の意味</p>
+                    <hr>
+                    @foreach (var item in Question.Word.Vocabularies)
+                    {
+                        <div class="row">
+                            <div class="col">@item.PartOfSpeech.InJapanese</div>
+                            <div class="col">@item.Meaning</div>
+                        </div>
+                    }
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-success" @onclick="NextButtonOnClick">Next</button>
+                </div>
+            }
+            else if (IsValid == false)
+            {
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">Incorrect!</h4>
+                </div>
+            }
+        }
+    </div>
+</div>
+@code {
+    private bool? IsValid;
+    private List<Word> WordList = new();
+    private Question Question = new();
+    private List<Question> Questions = new();
+    private int index;
+    private bool IsFinish = false;
 
-<PageTitle>Index</PageTitle>
+    private string[] ModeList = { "練習", "試験" };
+    private List<Level> LevelList = new();
+    private List<PartOfSpeech> PartOfSpeechList = new();
+
+    private string Mode = "";
+    private string Level = "";
+    private string PartOfSpeech = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Refresh();
+    }
+
+    public void Refresh()
+    {
+        IsValid = null;
+        index = 0;
+        PartOfSpeechList = db.PartOfSpeeches.ToList();
+        LevelList = db.Levels.ToList();
+        if (string.IsNullOrEmpty(PartOfSpeech))
+            PartOfSpeech = PartOfSpeechList.First().Name;
+        if (string.IsNullOrEmpty(Level))
+            Level = LevelList.First().Name;
+        Questions = db.Words.Include(a => a.Vocabularies).ThenInclude(a => a.PartOfSpeech).Where(a => a.Vocabularies.Any(b => b.PartOfSpeech.Name == PartOfSpeech && b.Level.Name == Level)).ToList().Select(a => new { a, o = Guid.NewGuid() }).OrderBy(a => a.o).Select(a => new Question
+            {
+                Word = new Word
+                {
+                    Id = a.a.Id,
+                    Word1 = a.a.Word1,
+                    Vocabularies = a.a.Vocabularies.Select(b => new Vocabulary
+                    {
+                        Id = b.Id,
+                        Meaning = b.Meaning,
+                        PartOfSpeech = new PartOfSpeech
+                        {
+                            Id = b.PartOfSpeech.Id,
+                            Name = b.PartOfSpeech.Name,
+                            InJapanese = b.PartOfSpeech.InJapanese
+                        },
+                        WordId = b.WordId,
+                        PartOfSpeechId = b.PartOfSpeechId
+                    }).ToList()
+                },
+                Answers = CreateAnswer(a.a)
+            }).ToList();
+        if (Questions.Count <= index)
+        {
+            Question = new Question
+                {
+                    Answers = new List<string>(),
+                    Word = new Word
+                    {
+                        Vocabularies = new List<Vocabulary>()
+                    }
+                };
+        }
+        else
+        {
+            Question = Questions[index];
+        }
+    }
+
+    private List<string> CreateAnswer(Word word)
+    {
+        List<string> tmp = new List<string>();
+        tmp.Add(word.Vocabularies.First(a => a.PartOfSpeech.Name == PartOfSpeech).Meaning);
+        db.Vocabularies.Where(a => a.Meaning != word.Vocabularies.First().Meaning && a.PartOfSpeech.Name == PartOfSpeech).Take(3).ToList().ForEach(a => tmp.Add(a.Meaning));
+        return tmp.Select(a => new { a, o = Guid.NewGuid() }).OrderBy(a => a.o).Select(a => a.a).ToList();
+    }
+
+    private void PartOfSpeechSpinnerSelectChanged(ChangeEventArgs e)
+    {
+        PartOfSpeech = db.PartOfSpeeches.First(a => a.InJapanese == (string)e.Value).Name;
+        Refresh();
+    }
+
+    private void ModeSpinnerSelectChanged(ChangeEventArgs e)
+    {
+        Mode = (string)e.Value;
+        Refresh();
+    }
+
+    private void LevelSpinnerSelectChanged(ChangeEventArgs e)
+    {
+        Level = (string)e.Value;
+        Refresh();
+    }
+
+    public void AnswerButtonOnClick(string answer)
+    {
+        IsValid = answer == Question.Word.Vocabularies.First(a => a.PartOfSpeech.Name == PartOfSpeech).Meaning;
+    }
+
+    private void NextButtonOnClick()
+    {
+        IsValid = null;
+        index++;
+        if (Questions.Count <= index)
+        {
+            IsFinish = true;
+        }
+        else
+        {
+            Question = Questions[index];
+        }
+    }
+
+    private void ReturnTopButtonOnClick()
+    {
+        navigationManager.NavigateTo("/", true);
+    }
+}

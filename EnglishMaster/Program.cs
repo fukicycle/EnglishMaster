@@ -13,6 +13,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 
+app.UsePathBase("/EnglishMaster");
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -26,5 +27,4 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
-
 app.Run();

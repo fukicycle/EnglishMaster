@@ -110,13 +110,13 @@
             PartOfSpeech = PartOfSpeechList.First().Name;
         if (string.IsNullOrEmpty(Level))
             Level = LevelList.First().Name;
-        Questions = db.Words.Include(a => a.Vocabularies).ThenInclude(a => a.PartOfSpeech).Where(a => a.Vocabularies.Any(b => b.PartOfSpeech.Name == PartOfSpeech && b.Level.Name == Level)).ToList().Select(a => new { a, o = Guid.NewGuid() }).OrderBy(a => a.o).Select(a => new Question
+        Questions = db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).CreateRandom().GroupBy(a => a.Word).ToList().Select(a => new Question
             {
                 Word = new Word
                 {
-                    Id = a.a.Id,
-                    Word1 = a.a.Word1,
-                    Vocabularies = a.a.Vocabularies.Select(b => new Vocabulary
+                    Id = a.Key.Id,
+                    Word1 = a.Key.Word1,
+                    Vocabularies = a.Select(b => new Vocabulary
                     {
                         Id = b.Id,
                         Meaning = b.Meaning,
@@ -130,7 +130,7 @@
                         PartOfSpeechId = b.PartOfSpeechId
                     }).ToList()
                 },
-                Answers = CreateAnswer(a.a)
+                Answers = CreateAnswer(a.Key)
             }).ToList();
         if (Questions.Count <= index)
         {
@@ -198,4 +198,4 @@
     {
         navigationManager.NavigateTo("/EnglishMaster", true);
     }
-}
+                    }

@@ -152,7 +152,7 @@
     {
         List<string> tmp = new List<string>();
         tmp.Add(word.Vocabularies.First(a => a.PartOfSpeech.Name == PartOfSpeech).Meaning);
-        db.Vocabularies.Where(a => a.Meaning != word.Vocabularies.First().Meaning && a.PartOfSpeech.Name == PartOfSpeech).Take(3).ToList().ForEach(a => tmp.Add(a.Meaning));
+        db.Vocabularies.Where(a => a.Meaning != word.Vocabularies.First().Meaning && a.PartOfSpeech.Name == PartOfSpeech).Select(a => new { a, o = Guid.NewGuid() }).OrderBy(a => a.o).Take(3).ToList().ForEach(a => tmp.Add(a.a.Meaning));
         return tmp.Select(a => new { a, o = Guid.NewGuid() }).OrderBy(a => a.o).Select(a => a.a).ToList();
     }
 

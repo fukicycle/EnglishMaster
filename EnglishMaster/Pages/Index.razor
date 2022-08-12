@@ -10,7 +10,16 @@
     <div class="m-auto" style="max-width:500px;">
         @if (IsStart && Mode == "試験")
         {
-            <p class="text-center h1 text-success">00:00:00</p>
+            <div class="card">
+                @if (IsExamFinish && IsStart)
+                {
+                    <p class="text-center h1 text-danger">Finish!</p>
+                }
+                else
+                {
+                    <p class="text-center h1 text-success">@Time.ToString(@"mm\:ss")</p>
+                }
+            </div>
         }
         else
         {
@@ -60,7 +69,14 @@
             <div>
                 @foreach (var item in Question.Answers)
                 {
-                    <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
+                    @if (IsExamFinish)
+                    {
+                        <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled>@item</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
+                    }
                 }
             </div>
             @if (IsValid == true)
@@ -107,11 +123,27 @@
     private string PartOfSpeech = "";
 
     private bool IsStart = false;
+    private bool IsExamFinish = false;
+    private System.Timers.Timer Timer;
+    private TimeSpan Time = TimeSpan.FromSeconds(10);
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         Refresh();
+        Timer =  new System.Timers.Timer(1000);
+        Timer.Elapsed += (s, e) =>
+        {
+            InvokeAsync(() =>
+            {
+                Time = Time.Subtract(TimeSpan.FromSeconds(1));
+                if (Time == TimeSpan.Zero)
+                {
+                    IsExamFinish = true;
+                }
+                StateHasChanged();
+            });
+        };
     }
 
     public void Refresh()
@@ -196,6 +228,11 @@
     public void AnswerButtonOnClick(string answer)
     {
         IsValid = Question.Word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).Select(a => a.Meaning).Contains(answer);
+        if (Mode == "試験")
+        {
+            IsValid = true;
+            NextButtonOnClick();
+        }
     }
 
     private void NextButtonOnClick()
@@ -220,5 +257,7 @@
     private void StartExam()
     {
         IsStart = true;
+        Timer.Start();
+        Timer.Enabled = true;
     }
 }

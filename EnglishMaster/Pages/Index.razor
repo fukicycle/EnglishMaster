@@ -45,6 +45,7 @@
         else
         {
             <p class="text-center h1 card p-3">@Question.Word.Word1</p>
+            <p class="text-center text-info">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
             <div>
                 @foreach (var item in Question.Answers)
                 {
@@ -130,7 +131,7 @@
                         PartOfSpeechId = b.PartOfSpeechId
                     }).ToList()
                 },
-                Answers = CreateAnswer(a.Word)
+                Answers = CreateAnswer(a)
             }).CreateRandom().ToList();
         if (Questions.Count <= index)
         {
@@ -149,11 +150,11 @@
         }
     }
 
-    private List<string> CreateAnswer(Word word)
+    private List<string> CreateAnswer(Vocabulary vocabulary)
     {
         List<string> tmp = new List<string>();
-        tmp.Add(word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).GetRandomFirstOrDefault().Meaning);
-        db.Vocabularies.Where(a => !word.Vocabularies.Select(b => b.Meaning).Contains(a.Meaning) && a.PartOfSpeech.Name == PartOfSpeech).CreateRandom().Take(3).ToList().ForEach(a => tmp.Add(a.Meaning));
+        tmp.Add(vocabulary.Meaning);
+        db.Vocabularies.Where(a => !db.Vocabularies.Where(b => b.WordId == vocabulary.WordId).Select(b => b.Meaning).Contains(a.Meaning) && a.PartOfSpeech.Name == PartOfSpeech).CreateRandom().Take(3).ToList().ForEach(a => tmp.Add(a.Meaning));
         return tmp.CreateRandom().ToList();
     }
 

@@ -1,4 +1,3 @@
-using EnglishMaster.Data;
 using EnglishMaster.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -9,7 +8,6 @@ builder.Services.AddDbContext<DB>(a => a.UseSqlServer(builder.Configuration.GetC
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 

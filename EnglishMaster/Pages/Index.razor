@@ -133,7 +133,7 @@
     private bool IsExamFinish = false;
     private System.Timers.Timer Timer;
     private TimeSpan Time = TimeSpan.FromSeconds(10);
-    private Dictionary<long, bool> ResultList = new();
+    private List<Models.Result> ResultList = new();
 
     protected override void OnInitialized()
     {
@@ -239,7 +239,12 @@
         IsValid = Question.Word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).Select(a => a.Meaning).Contains(answer);
         if (Mode == "試験")
         {
-            ResultList.Add(Questions[index].Word.Id, IsValid.Value);
+            ResultList.Add(new Models.Result
+                {
+                    Word = Questions[index].Word,
+                    Answer = answer,
+                    IsCorrect = IsValid.Value
+                });
             await protectedSessionStore.SetAsync("Result", JsonConvert.SerializeObject(ResultList));
             IsValid = true;
             NextButtonOnClick();

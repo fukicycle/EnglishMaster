@@ -190,6 +190,11 @@
         if (Mode == "試験")
         {
             Questions = Questions.Take(25).ToList();
+            ResultList.AddRange(Questions.Select(a => new Models.Result
+                {
+                    Word = a.Word,
+                    IsCorrect = null
+                }));
         }
         if (Questions.Count <= index)
         {
@@ -239,12 +244,9 @@
         IsValid = Question.Word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).Select(a => a.Meaning).Contains(answer);
         if (Mode == "試験")
         {
-            ResultList.Add(new Models.Result
-                {
-                    Word = Questions[index].Word,
-                    Answer = answer,
-                    IsCorrect = IsValid.Value
-                });
+            var result = ResultList.First(a => a.Word.Id == Questions[index].Word.Id);
+            result.Answer = answer;
+            result.IsCorrect = IsValid;
             await protectedSessionStore.SetAsync("Result", JsonConvert.SerializeObject(ResultList));
             IsValid = true;
             NextButtonOnClick();

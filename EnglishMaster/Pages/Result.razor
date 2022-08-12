@@ -15,20 +15,24 @@
                     @item.Word.Word1
                 </div>
                 <div class="col">
-                    @if (item.IsCorrect)
+                    @if (item.IsCorrect == true)
                     {
                         <p class="text-success">Correct</p>
                     }
-                    else
+                    else if (item.IsCorrect == false)
                     {
                         <p class="text-danger">Incorrect</p>
+                    }
+                    else
+                    {
+                        <p class="text-secondary">No answer</p>
                     }
                 </div>
                 <div class="col">
                     <p>@item.Answer</p>
                 </div>
                 <div class="col">
-                    @foreach(var item1 in item.Word.Vocabularies)
+                    @foreach (var item1 in item.Word.Vocabularies)
                     {
                         <p>@item1.Meaning</p>
                     }

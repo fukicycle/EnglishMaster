@@ -110,13 +110,13 @@
             PartOfSpeech = PartOfSpeechList.First().Name;
         if (string.IsNullOrEmpty(Level))
             Level = LevelList.First().Name;
-        Questions = db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).CreateRandom().GroupBy(a => a.Word).ToList().Select(a => new Question
+        Questions = db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList().Select(a => new Question
             {
                 Word = new Word
                 {
-                    Id = a.Key.Id,
-                    Word1 = a.Key.Word1,
-                    Vocabularies = a.Select(b => new Vocabulary
+                    Id = a.Word.Id,
+                    Word1 = a.Word.Word1,
+                    Vocabularies = db.Vocabularies.Where(b => b.PartOfSpeech.Name == PartOfSpeech && b.Level.Name == Level && b.WordId == a.WordId).Select(b => new Vocabulary
                     {
                         Id = b.Id,
                         Meaning = b.Meaning,
@@ -130,8 +130,8 @@
                         PartOfSpeechId = b.PartOfSpeechId
                     }).ToList()
                 },
-                Answers = CreateAnswer(a.Key)
-            }).ToList();
+                Answers = CreateAnswer(a.Word)
+            }).CreateRandom().ToList();
         if (Questions.Count <= index)
         {
             Question = new Question

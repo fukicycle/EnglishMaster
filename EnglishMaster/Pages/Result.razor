@@ -1,0 +1,51 @@
+﻿@page "/result"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Newtonsoft.Json
+@inject ProtectedSessionStorage protectedSessionStore
+@inject Models.DB db
+<PageTitle>Result</PageTitle>
+
+<h3>Result</h3>
+<ul>
+    @foreach (var item in ExamResult)
+    {
+        <li>
+            <div class="row">
+                <div class="col">
+                    @db.Words.Find(item.Key).Word1
+                </div>
+                <div class="col">
+                    @if (item.Value)
+                    {
+                        <p class="text-success">Correct</p>
+                    }
+                    else
+                    {
+                        <p class="text-danger">Incorrect</p>
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+@code {
+    private Dictionary<long, bool> ExamResult = new();
+    private string tmp;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadStateAsync();
+            ExamResult = JsonConvert.DeserializeObject<Dictionary<long, bool>>(tmp);
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadStateAsync()
+    {
+        var result = await protectedSessionStore.GetAsync<string>("Result");
+        tmp = result.Success ? result.Value : "";
+    }
+}

@@ -1,6 +1,66 @@
 ﻿@page "/timer"
 <PageTitle>Timer</PageTitle>
 
-
+<div class="card h1">@Time.ToString(@"hh\:mm\:ss")</div>
+<div class="row">
+    <button type="button" @onclick="@StartTimer" class="btn btn-outline-primary col">Start</button>
+    <button type="button" @onclick="@PauseTimer" class="btn btn-outline-secondary col">Pause</button>
+    <button type="button" @onclick="@StopTimer" class="btn btn-outline-secondary col">Stop</button>
+</div>
+@if (Time == TimeSpan.FromSeconds(10))
+{
+    <h1>Stop it!</h1>
+}
+else
+{
+    <h1>Do it!</h1>
+}
 @code {
+    private System.Timers.Timer timer;
+    private TimeSpan Time = TimeSpan.FromSeconds(10);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CreateTimer();
+    }
+
+    private void CreateTimer()
+    {
+        timer = new System.Timers.Timer();
+        timer.Elapsed += (s, e) =>
+        {
+            Time = Time.Subtract(TimeSpan.FromSeconds(1));
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+                if (Time == TimeSpan.Zero)
+                {
+                    StopTimer();
+                }
+            });
+        };
+        timer.Interval = 1000;
+    }
+
+    private void StartTimer()
+    {
+        if (timer == null) return;
+        timer.Start();
+        timer.Enabled = true;
+    }
+
+    private void PauseTimer()
+    {
+        if (timer == null) return;
+        timer.Enabled = false;
+    }
+
+    private void StopTimer()
+    {
+        if (timer == null) return;
+        Time = TimeSpan.FromSeconds(10);
+        PauseTimer();
+        StateHasChanged();
+    }
 }

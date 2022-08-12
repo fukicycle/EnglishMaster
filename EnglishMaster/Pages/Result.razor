@@ -4,44 +4,53 @@
 @inject ProtectedSessionStorage protectedSessionStore
 @inject Models.DB db
 <PageTitle>Result</PageTitle>
+<div class="text-center">
+    <p class="text-center h3">試験結果</p>
+    <table class="table table-borderless table-success">
+        <thead>
+            <tr>
+                <th class="col-2">単語</th>
+                <th class="col-2">成否</th>
+                <th class="col-2">あなたの答え</th>
+                <th class="col">意味（すべて）</th>
+            </tr>
+        </thead>
+        <tbody>
 
-<h3>Result</h3>
-<ul>
-    @foreach (var item in ExamResult)
-    {
-        <li>
-            <div class="row">
-                <div class="col">
-                    @item.Word.Word1
-                </div>
-                <div class="col">
-                    @if (item.IsCorrect == true)
-                    {
-                        <p class="text-success">Correct</p>
-                    }
-                    else if (item.IsCorrect == false)
-                    {
-                        <p class="text-danger">Incorrect</p>
-                    }
-                    else
-                    {
-                        <p class="text-secondary">No answer</p>
-                    }
-                </div>
-                <div class="col">
-                    <p>@item.Answer</p>
-                </div>
-                <div class="col">
-                    @foreach (var item1 in item.Word.Vocabularies)
-                    {
-                        <p>@item1.Meaning</p>
-                    }
-                </div>
-            </div>
-        </li>
-    }
-</ul>
-
+            @foreach (var item in ExamResult)
+            {
+                <tr>
+                    <td class="col-2">
+                        @item.Word.Word1
+                    </td>
+                    <td class="col-2">
+                        @if (item.IsCorrect == true)
+                        {
+                            <p class="text-success">Correct</p>
+                        }
+                        else if (item.IsCorrect == false)
+                        {
+                            <p class="text-danger">Incorrect</p>
+                        }
+                        else
+                        {
+                            <p class="text-secondary">No answer</p>
+                        }
+                    </td>
+                    <td class="col-2">
+                        <p>@item.Answer</p>
+                    </td>
+                    <td class="col">
+                        @foreach (var item1 in item.Word.Vocabularies)
+                        {
+                            <p>@item1.Meaning (@item1.PartOfSpeech.Name)</p>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 @code {
     private List<Models.Result> ExamResult = new();
     private string tmp;

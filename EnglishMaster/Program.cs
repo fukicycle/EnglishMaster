@@ -8,6 +8,7 @@ builder.Services.AddDbContext<DB>(a => a.UseSqlServer(builder.Configuration.GetC
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSignalR(a => a.MaximumReceiveMessageSize = 102400000);
 
 var app = builder.Build();
 
@@ -17,7 +18,6 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
-
 
 app.UseStaticFiles();
 

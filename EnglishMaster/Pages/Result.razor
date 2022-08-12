@@ -12,10 +12,10 @@
         <li>
             <div class="row">
                 <div class="col">
-                    @db.Words.Find(item.Key).Word1
+                    @item.Word.Word1
                 </div>
                 <div class="col">
-                    @if (item.Value)
+                    @if (item.IsCorrect)
                     {
                         <p class="text-success">Correct</p>
                     }
@@ -24,13 +24,22 @@
                         <p class="text-danger">Incorrect</p>
                     }
                 </div>
+                <div class="col">
+                    <p>@item.Answer</p>
+                </div>
+                <div class="col">
+                    @foreach(var item1 in item.Word.Vocabularies)
+                    {
+                        <p>@item1.Meaning</p>
+                    }
+                </div>
             </div>
         </li>
     }
 </ul>
 
 @code {
-    private Dictionary<long, bool> ExamResult = new();
+    private List<Models.Result> ExamResult = new();
     private string tmp;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -38,7 +47,7 @@
         if (firstRender)
         {
             await LoadStateAsync();
-            ExamResult = JsonConvert.DeserializeObject<Dictionary<long, bool>>(tmp);
+            ExamResult = JsonConvert.DeserializeObject<List<Models.Result>>(tmp);
             StateHasChanged();
         }
     }

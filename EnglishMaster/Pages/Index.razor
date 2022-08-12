@@ -67,21 +67,24 @@
         }
         else
         {
-            <p class="text-center h1 card p-3">@Question.Word.Word1</p>
-            <p class="text-center text-info">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
-            <div>
-                @foreach (var item in Question.Answers)
-                {
-                    @if (IsExamFinish)
+            @if (!IsStart && Mode != "試験")
+            {
+                <p class="text-center h1 card p-3">@Question.Word.Word1</p>
+                <p class="text-center text-info">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
+                <div>
+                    @foreach (var item in Question.Answers)
                     {
-                        <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled>@item</button>
+                        @if (IsExamFinish)
+                        {
+                            <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled>@item</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
+                        }
                     }
-                    else
-                    {
-                        <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
-                    }
-                }
-            </div>
+                </div>
+            }
             @if (IsValid == true)
             {
                 <div class="alert alert-success">
@@ -156,6 +159,7 @@
 
     public void Refresh()
     {
+        IsStart = false;
         ResultList = new();
         IsValid = null;
         index = 0;

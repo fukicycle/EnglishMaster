@@ -154,7 +154,7 @@
     {
         List<string> tmp = new List<string>();
         tmp.Add(vocabulary.Meaning);
-        db.Vocabularies.Where(a => !db.Vocabularies.Where(b => b.WordId == vocabulary.WordId).Select(b => b.Meaning).Contains(a.Meaning) && a.PartOfSpeech.Name == PartOfSpeech).CreateRandom().Take(3).ToList().ForEach(a => tmp.Add(a.Meaning));
+        db.Vocabularies.Where(a => !db.Vocabularies.Where(b => b.WordId == vocabulary.WordId).Select(b => b.Meaning).Contains(a.Meaning) && a.PartOfSpeech.Name == PartOfSpeech).CreateRandom().Select(a => a.Meaning).Distinct().Take(3).ToList().ForEach(a => tmp.Add(a));
         return tmp.CreateRandom().ToList();
     }
 

@@ -8,33 +8,44 @@
 <PageTitle>Main</PageTitle>
 <div class="text-center">
     <div class="m-auto" style="max-width:500px;">
-        <div class="input-group">
-            <span class="input-group-text col-4">モード</span>
-            <select class="form-select" @onchange="ModeSpinnerSelectChanged">
-                @foreach (var item in ModeList)
-                {
-                    <option>@item</option>
-                }
-            </select>
-        </div>
-        <div class="input-group">
-            <span class="input-group-text col-4">レベル</span>
-            <select class="form-select" @onchange="LevelSpinnerSelectChanged">
-                @foreach (var item in LevelList)
-                {
-                    <option>@item.Name</option>
-                }
-            </select>
-        </div>
-        <div class="input-group">
-            <span class="input-group-text col-4">品詞</span>
-            <select class="form-select" @onchange="PartOfSpeechSpinnerSelectChanged">
-                @foreach (var item in PartOfSpeechList)
-                {
-                    <option>@item.InJapanese</option>
-                }
-            </select>
-        </div>
+        @if (IsStart && Mode == "試験")
+        {
+            <p class="text-center h1 text-success">00:00:00</p>
+        }
+        else
+        {
+            <div class="input-group">
+                <span class="input-group-text col-4">モード</span>
+                <select class="form-select" @onchange="ModeSpinnerSelectChanged">
+                    @foreach (var item in ModeList)
+                    {
+                        <option>@item</option>
+                    }
+                </select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text col-4">レベル</span>
+                <select class="form-select" @onchange="LevelSpinnerSelectChanged">
+                    @foreach (var item in LevelList)
+                    {
+                        <option>@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text col-4">品詞</span>
+                <select class="form-select" @onchange="PartOfSpeechSpinnerSelectChanged">
+                    @foreach (var item in PartOfSpeechList)
+                    {
+                        <option>@item.InJapanese</option>
+                    }
+                </select>
+            </div>
+            if (IsStart == false && Mode == "試験")
+            {
+                <button type="button" class="btn btn-outline-primary form-control" @onclick="StartExam">試験開始!</button>
+            }
+        }
         @if (IsFinish)
         {
             <div class="row m-1">
@@ -95,6 +106,8 @@
     private string Level = "";
     private string PartOfSpeech = "";
 
+    private bool IsStart = false;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -133,6 +146,10 @@
                 },
                 Answers = CreateAnswer(a)
             }).CreateRandom().ToList();
+        if (Mode == "試験")
+        {
+            Questions = Questions.Take(25).ToList();
+        }
         if (Questions.Count <= index)
         {
             Question = new Question
@@ -199,4 +216,9 @@
     {
         navigationManager.NavigateTo("/EnglishMaster", true);
     }
-                    }
+
+    private void StartExam()
+    {
+        IsStart = true;
+    }
+}

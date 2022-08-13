@@ -11,8 +11,11 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSignalR(a => a.MaximumReceiveMessageSize = 102400000);
 
 var app = builder.Build();
-
+#if DEBUG
+app.UsePathBase("/EnglishMasterStage");
+#else
 app.UsePathBase("/EnglishMaster");
+#endif
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

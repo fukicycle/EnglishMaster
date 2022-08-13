@@ -58,7 +58,7 @@
                 <button type="button" class="btn btn-outline-primary form-control" @onclick="StartExam">試験開始!</button>
             }
         }
-        @if (IsFinish)
+        @if (IsFinish && Mode != "試験")
         {
             <div class="row m-1">
                 <p class="text-success h1">All done!</p>
@@ -135,14 +135,14 @@
     private bool IsStart = false;
     private bool IsExamFinish = false;
     private System.Timers.Timer Timer;
-    private TimeSpan Time = TimeSpan.FromSeconds(10);
+    private TimeSpan Time = TimeSpan.FromMinutes(5);
     private List<Models.Result> ResultList = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         Refresh();
-        Timer =  new System.Timers.Timer(1000);
+        Timer = new System.Timers.Timer(1000);
         Timer.Elapsed += (s, e) =>
         {
             InvokeAsync(() =>
@@ -264,6 +264,7 @@
         if (Questions.Count <= index)
         {
             IsFinish = true;
+            IsExamFinish = true;
         }
         else
         {
@@ -273,7 +274,11 @@
 
     private void ReturnTopButtonOnClick()
     {
+#if DEBUG
+    navigationManager.NavigateTo("/EnglishMasterStage", true);
+#else
         navigationManager.NavigateTo("/EnglishMaster", true);
+#endif
     }
 
     private void StartExam()

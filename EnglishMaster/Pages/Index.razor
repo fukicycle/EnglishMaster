@@ -268,7 +268,7 @@
             result.IsCorrect = IsValid;
             await protectedSessionStore.SetAsync("Result", JsonConvert.SerializeObject(ResultList));
             IsValid = true;
-            NextButtonOnClick();
+            await NextButtonOnClick();
         }
         IsSpinner = false;
     }

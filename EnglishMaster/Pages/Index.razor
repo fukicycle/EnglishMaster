@@ -263,7 +263,7 @@
         IsValid = Question.Word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).Select(a => a.Meaning).Contains(answer);
         if (Mode == "試験")
         {
-            var result = ResultList.First(a => a.Word.Id == Questions[index].Word.Id);
+            var result = ResultList[index];
             result.Answer = answer;
             result.IsCorrect = IsValid;
             await protectedSessionStore.SetAsync("Result", JsonConvert.SerializeObject(ResultList));

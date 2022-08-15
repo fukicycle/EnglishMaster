@@ -53,9 +53,16 @@
                     }
                 </select>
             </div>
-            if (IsStart == false && Mode == "試験")
+            @if (IsSpinner)
             {
-                <button type="button" class="btn btn-outline-primary form-control" @onclick="StartExam">試験開始!</button>
+                <div class="spinner-border text-info m-4"></div>
+            }
+            else
+            {
+                if (IsStart == false && Mode == "試験")
+                {
+                    <button type="button" class="btn btn-outline-primary form-control" @onclick="StartExam">試験開始!</button>
+                }
             }
         }
         @if (IsFinish && Mode != "試験")
@@ -67,51 +74,54 @@
         }
         else
         {
-            @if (IsStart || Mode != "試験")
+            @if (!IsSpinner)
             {
-                <p class="text-center h1 card p-3">@Question.Word.Word1</p>
-                <p class="text-center text-info">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
-                <div>
-                    @foreach (var item in Question.Answers)
-                    {
-                        @if (IsExamFinish)
+                @if (IsStart || Mode != "試験")
+                {
+                    <p class="text-center h1 card p-3">@Question.Word.Word1</p>
+                    <p class="text-center text-info">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
+                    <div>
+                        @foreach (var item in Question.Answers)
                         {
-                            <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled>@item</button>
+                            @if (IsExamFinish)
+                            {
+                                <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled>@item</button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
+                            }
                         }
-                        else
+                    </div>
+                }
+                @if (IsValid == true)
+                {
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">Correct!</h4>
+                        <p>この単語の意味</p>
+                        <hr>
+                        @foreach (var item in Question.Word.Vocabularies)
                         {
-                            <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
+                            <div class="row">
+                                <div class="col">@item.PartOfSpeech.InJapanese</div>
+                                <div class="col">@item.Meaning</div>
+                            </div>
                         }
-                    }
-                </div>
-            }
-            @if (IsValid == true)
-            {
-                <div class="alert alert-success">
-                    <h4 class="alert-heading">Correct!</h4>
-                    <p>この単語の意味</p>
-                    <hr>
-                    @foreach (var item in Question.Word.Vocabularies)
-                    {
-                        <div class="row">
-                            <div class="col">@item.PartOfSpeech.InJapanese</div>
-                            <div class="col">@item.Meaning</div>
-                        </div>
-                    }
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-outline-success" @onclick="NextButtonOnClick">Next</button>
-                </div>
-            }
-            else if (IsValid == false)
-            {
-                <div class="alert alert-danger">
-                    <h4 class="alert-heading">Incorrect!</h4>
-                </div>
-            }
-            @if (IsExamFinish)
-            {
-                <button type="button" class="btn-outline-primary form-control" @onclick="GoExamResult">結果を見る</button>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-success" @onclick="NextButtonOnClick">Next</button>
+                    </div>
+                }
+                else if (IsValid == false)
+                {
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">Incorrect!</h4>
+                    </div>
+                }
+                @if (IsExamFinish)
+                {
+                    <button type="button" class="btn-outline-primary form-control" @onclick="GoExamResult">結果を見る</button>
+                }
             }
         }
     </div>
@@ -138,25 +148,27 @@
     private TimeSpan Time = TimeSpan.FromMinutes(5);
     private List<Models.Result> ResultList = new();
 
-    protected override void OnInitialized()
+    private bool IsSpinner = false;
+
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        Refresh();
+        IsSpinner = true;
+        await Task.Run(() => Refresh());
         Timer = new System.Timers.Timer(1000);
         Timer.Elapsed += (s, e) =>
         {
             InvokeAsync(() =>
+        {
+            Time = Time.Subtract(TimeSpan.FromSeconds(1));
+            if (Time == TimeSpan.Zero)
             {
-                Time = Time.Subtract(TimeSpan.FromSeconds(1));
-                if (Time == TimeSpan.Zero)
-                {
-                    IsExamFinish = true;
-                }
-                StateHasChanged();
-            });
+                IsExamFinish = true;
+            }
+            StateHasChanged();
+        });
         };
+        IsSpinner = false;
     }
-
     public void Refresh()
     {
         IsStart = false;
@@ -225,26 +237,36 @@
         return tmp.CreateRandom().ToList();
     }
 
-    private void PartOfSpeechSpinnerSelectChanged(ChangeEventArgs e)
+    private async Task PartOfSpeechSpinnerSelectChanged(ChangeEventArgs e)
     {
+        IsSpinner = true;
         PartOfSpeech = db.PartOfSpeeches.First(a => a.InJapanese == (string)e.Value).Name;
-        Refresh();
+        await Task.Run(() =>
+        {
+            Refresh();
+        });
+        IsSpinner = false;
     }
 
-    private void ModeSpinnerSelectChanged(ChangeEventArgs e)
+    private async Task ModeSpinnerSelectChanged(ChangeEventArgs e)
     {
+        IsSpinner = true;
         Mode = (string)e.Value;
-        Refresh();
+        await Task.Run(() => Refresh());
+        IsSpinner = false;
     }
 
-    private void LevelSpinnerSelectChanged(ChangeEventArgs e)
+    private async Task LevelSpinnerSelectChanged(ChangeEventArgs e)
     {
+        IsSpinner = true;
         Level = (string)e.Value;
-        Refresh();
+        await Task.Run(() => Refresh());
+        IsSpinner = false;
     }
 
     public async Task AnswerButtonOnClick(string answer)
     {
+        IsSpinner = true;
         IsValid = Question.Word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).Select(a => a.Meaning).Contains(answer);
         if (Mode == "試験")
         {
@@ -255,6 +277,7 @@
             IsValid = true;
             NextButtonOnClick();
         }
+        IsSpinner = false;
     }
 
     private void NextButtonOnClick()

@@ -83,14 +83,7 @@
                     <div>
                         @foreach (var item in Question.Answers)
                         {
-                            @if (IsExamFinish)
-                            {
-                                <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled>@item</button>
-                            }
-                            else
-                            {
-                                <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)">@item</button>
-                            }
+                            <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled="@IsExamFinish">@item</button>
                         }
                     </div>
                 }

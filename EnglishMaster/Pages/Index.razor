@@ -28,7 +28,7 @@
         {
             <div class="input-group">
                 <span class="input-group-text col-4">モード</span>
-                <select class="form-select" @onchange="ModeSpinnerSelectChanged">
+                <select class="form-select" @onchange="ModeSpinnerSelectChanged" disabled="@IsSpinner">
                     @foreach (var item in ModeList)
                     {
                         <option>@item</option>
@@ -37,7 +37,7 @@
             </div>
             <div class="input-group">
                 <span class="input-group-text col-4">レベル</span>
-                <select class="form-select" @onchange="LevelSpinnerSelectChanged">
+                <select class="form-select" @onchange="LevelSpinnerSelectChanged" disabled="@IsSpinner">
                     @foreach (var item in LevelList)
                     {
                         <option>@item.Name</option>
@@ -46,7 +46,7 @@
             </div>
             <div class="input-group">
                 <span class="input-group-text col-4">品詞</span>
-                <select class="form-select" @onchange="PartOfSpeechSpinnerSelectChanged">
+                <select class="form-select" @onchange="PartOfSpeechSpinnerSelectChanged" disabled="@IsSpinner">
                     @foreach (var item in PartOfSpeechList)
                     {
                         <option>@item.InJapanese</option>

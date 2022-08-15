@@ -273,19 +273,24 @@
         IsSpinner = false;
     }
 
-    private void NextButtonOnClick()
+    private async Task NextButtonOnClick()
     {
-        IsValid = null;
-        index++;
-        if (Questions.Count <= index)
+        IsSpinner = true;
+        await Task.Run(() =>
         {
-            IsFinish = true;
-            IsExamFinish = true;
-        }
-        else
-        {
-            Question = Questions[index];
-        }
+            IsValid = null;
+            index++;
+            if (Questions.Count <= index)
+            {
+                IsFinish = true;
+                IsExamFinish = true;
+            }
+            else
+            {
+                Question = Questions[index];
+            }
+        });
+        IsSpinner = false;
     }
 
     private void ReturnTopButtonOnClick()

@@ -6,61 +6,71 @@
 <PageTitle>Result</PageTitle>
 <div class="text-center">
     <p class="text-center h3">試験結果</p>
-    <table class="table table-borderless table-success">
-        <thead>
-            <tr>
-                <th class="col-2">単語</th>
-                <th class="col-2">成否</th>
-                <th class="col-2">あなたの答え</th>
-                <th class="col">意味（すべて）</th>
-            </tr>
-        </thead>
-        <tbody>
+    @if (IsLoading)
+    {
+        <div class="spinner-border text-info"></div>
+    }
+    else
+    {
+        <table>
+            <thead>
 
-            @foreach (var item in ExamResult)
-            {
-                <tr>
-                    <td class="col-2">
-                        @item.Word.Word1
-                    </td>
-                    <td class="col-2">
-                        @if (item.IsCorrect == true)
-                        {
-                            <p class="text-success">Correct</p>
-                        }
-                        else if (item.IsCorrect == false)
-                        {
-                            <p class="text-danger">Incorrect</p>
-                        }
-                        else
-                        {
-                            <p class="text-secondary">No answer</p>
-                        }
-                    </td>
-                    <td class="col-2">
-                        <p>@item.Answer</p>
-                    </td>
-                    <td class="col">
-                        @foreach (var item1 in item.Word.Vocabularies)
-                        {
-                            <p>@item1.Meaning (@item1.PartOfSpeech.Name)</p>
-                        }
-                    </td>
+                <tr class="heading">
+                    <th>単語</th>
+                    <th>成否</th>
+                    <th>あなたの答え</th>
+                    <th>意味（すべて）</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in ExamResult)
+                {
+                    <tr>
+                        <td class="word-name" data-label="単語">
+                            @item.Word.Word1
+                        </td>
+                        <td data-label="成否">
+                            @if (item.IsCorrect == true)
+                            {
+                                <p class="text-success">Correct</p>
+                            }
+                            else if (item.IsCorrect == false)
+                            {
+                                <p class="text-danger">Incorrect</p>
+                            }
+                            else
+                            {
+                                <p class="text-secondary">No answer</p>
+                            }
+                        </td>
+                        <td data-label="あなたの答え">
+                            <p>@item.Answer</p>
+                        </td>
+                        <td data-label="意味(すべて)">
+                            @foreach (var item1 in item.Word.Vocabularies)
+                            {
+                                <p>@item1.Meaning (@item1.PartOfSpeech.Name)</p>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 @code {
     private List<Models.Result> ExamResult = new();
     private string tmp;
+    private bool IsLoading = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            IsLoading = true;
             await LoadStateAsync();
             ExamResult = JsonConvert.DeserializeObject<List<Models.Result>>(tmp);
+            IsLoading = false;
             StateHasChanged();
         }
     }

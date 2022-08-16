@@ -260,16 +260,19 @@
     public async Task AnswerButtonOnClick(string answer)
     {
         IsSpinner = true;
-        IsValid = Question.Word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).Select(a => a.Meaning).Contains(answer);
-        if (Mode == "試験")
+        await Task.Run(async () =>
         {
-            var result = ResultList[index];
-            result.Answer = answer;
-            result.IsCorrect = IsValid;
-            await protectedSessionStore.SetAsync("Result", JsonConvert.SerializeObject(ResultList));
-            IsValid = true;
-            await NextButtonOnClick();
-        }
+            IsValid = Question.Word.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech).Select(a => a.Meaning).Contains(answer);
+            if (Mode == "試験")
+            {
+                var result = ResultList[index];
+                result.Answer = answer;
+                result.IsCorrect = IsValid;
+                await protectedSessionStore.SetAsync("Result", JsonConvert.SerializeObject(ResultList));
+                IsValid = true;
+                await NextButtonOnClick();
+            }
+        });
         IsSpinner = false;
     }
 

@@ -3,6 +3,7 @@
 @using Newtonsoft.Json
 @inject ProtectedSessionStorage protectedSessionStore
 @inject Models.DB db
+@inject NavigationManager navManager
 <PageTitle>Result</PageTitle>
 <div class="text-center">
     <p class="text-center h3">試験結果</p>
@@ -57,6 +58,7 @@
             </tbody>
         </table>
     }
+    <button class="btn btn-secondary form-control m-3" @onclick="@(() => navManager.NavigateTo(navManager.BaseUri))">戻る</button>
 </div>
 @code {
     private List<Models.Result> ExamResult = new();

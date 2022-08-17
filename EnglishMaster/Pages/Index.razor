@@ -20,7 +20,7 @@
                 }
                 else
                 {
-                    <p class="text-center h1 text-success">@Time.ToString(@"mm\:ss")</p>
+                    <p class="text-center h1 text-secondary">@Time.ToString(@"mm\:ss")</p>
                 }
             </div>
         }
@@ -55,13 +55,13 @@
             </div>
             @if (IsSpinner)
             {
-                <div class="spinner-border text-info m-4"></div>
+                <div class="spinner-border text-secondary m-4"></div>
             }
             else
             {
                 if (IsStart == false && Mode == "試験")
                 {
-                    <button type="button" class="btn btn-outline-primary form-control" @onclick="StartExam">試験開始!</button>
+                    <button type="button" class="btn btn-primary form-control" @onclick="StartExam">試験開始!</button>
                 }
             }
         }
@@ -79,7 +79,7 @@
                 @if (IsStart || Mode != "試験")
                 {
                     <p class="text-center h1 card p-3">@Question.Word.Word1</p>
-                    <p class="text-center text-info">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
+                    <p class="text-center text-secondary">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
                     <div>
                         @foreach (var item in Question.Answers)
                         {
@@ -102,7 +102,7 @@
                         }
                     </div>
                     <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-outline-success" @onclick="NextButtonOnClick">Next</button>
+                        <button type="button" class="btn btn-success" @onclick="NextButtonOnClick">Next</button>
                     </div>
                 }
                 else if (IsValid == false)
@@ -113,7 +113,7 @@
                 }
                 @if (IsExamFinish)
                 {
-                    <button type="button" class="btn-outline-primary form-control" @onclick="GoExamResult">結果を見る</button>
+                    <button type="button" class="btn-primary form-control" @onclick="GoExamResult">結果を見る</button>
                 }
             }
         }

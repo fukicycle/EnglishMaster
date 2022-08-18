@@ -16,11 +16,11 @@
             <div class="card">
                 @if (IsExamFinish && IsStart)
                 {
-                    <p class="text-center h1 text-danger">Finish!</p>
+                    <p class="text-center h1 text-danger exam-timer">Finish!</p>
                 }
                 else
                 {
-                    <p class="text-center h1 text-secondary">@Time.ToString(@"mm\:ss")</p>
+                    <p class="text-center h1 m-0 exam-timer">@Time.ToString(@"mm\:ss")</p>
                 }
             </div>
         }
@@ -78,8 +78,11 @@
             {
                 @if (IsStart || Mode != "試験")
                 {
-                    <p class="text-center h1 card p-3">@Question.Word.Word1</p>
-                    <p class="text-center text-secondary">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
+                    <div id="word-panel" class="text-center card">
+                        <p class="text-center h1 p-3 m-0 fw-bold">@(Question.Word.Word1 ?? "No word")</p>
+                        <hr class="m-0" />
+                        <p class="text-center p-1 m-0">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
+                    </div>
                     <div>
                         @foreach (var item in Question.Answers)
                         {

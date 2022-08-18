@@ -2,6 +2,8 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #A8B2C2;
+    color: #162141;
 }
 
 h1:focus {
@@ -105,4 +107,37 @@ th {
     .word-name {
         background: #eee;
     }
+}
+
+.input-group-text {
+    background-color: #C6CCD7;
+    border: 1px solid #6C7D98;
+}
+
+.form-select {
+    background-color: #C6CCD7;
+    border: 1px solid #6C7D98;
+}
+
+.btn-outline-secondary {
+    margin: 6px 0px 0px 0px;
+    background-color: #8A97AD;
+    border-width: 0px;
+    color: #162141;
+}
+
+    .btn-outline-secondary:hover {
+        margin: 6px 0px 0px 0px;
+        background-color: #162141;
+        border-width: 0px;
+        color: #C6CCD7;
+    }
+
+#word-panel {
+    background-color: #C6CCD7;
+    border: 1px solid #6C7D98;
+}
+
+.exam-timer {
+    background-color: #C6CCD7;
 }

@@ -4,6 +4,7 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background-color: #A8B2C2;
     color: #162141;
+    font-size: 20px;
 }
 
 h1:focus {
@@ -18,6 +19,7 @@ a, .btn-link {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
+    font-size: clamp(17px,1vw,25px);
 }
 
 .content {
@@ -119,11 +121,18 @@ th {
     border: 1px solid #6C7D98;
 }
 
+.form-select:disabled {
+    background-color: #C6CCD7;
+    border: 1px solid #6C7D98;
+    opacity:0.5;
+}
+
 .btn-outline-secondary {
     margin: 6px 0px 0px 0px;
     background-color: #8A97AD;
     border-width: 0px;
     color: #162141;
+    font-size: clamp(17px,1vw,25px);
 }
 
     .btn-outline-secondary:hover {

@@ -13,10 +13,10 @@
     <div class="m-auto" style="max-width:500px;">
         @if (IsStart && Mode == "試験")
         {
-            <div class="card">
+            <div>
                 @if (IsExamFinish && IsStart)
                 {
-                    <p class="text-center h1 text-danger exam-timer">Finish!</p>
+                    <p class="text-center h1 text-success exam-timer">Finish!</p>
                 }
                 else
                 {
@@ -37,7 +37,8 @@
             </div>
             <div class="input-group">
                 <span class="input-group-text col-4">レベル</span>
-                <select class="form-select" @onchange="LevelSpinnerSelectChanged" disabled="@IsSpinner">
+                @*<select class="form-select" @onchange="LevelSpinnerSelectChanged" disabled="@IsSpinner">*@
+                <select class="form-select" @onchange="LevelSpinnerSelectChanged" disabled>
                     @foreach (var item in LevelList)
                     {
                         <option>@item.Name</option>
@@ -61,7 +62,7 @@
             {
                 if (IsStart == false && Mode == "試験")
                 {
-                    <button type="button" class="btn btn-primary form-control" @onclick="StartExam">試験開始!</button>
+                    <button type="button" class="btn btn-outline-secondary form-control" @onclick="StartExam">試験開始!</button>
                 }
             }
         }
@@ -76,47 +77,50 @@
         {
             @if (!IsSpinner)
             {
-                @if (IsStart || Mode != "試験")
-                {
-                    <div id="word-panel" class="text-center card">
-                        <p class="text-center h1 p-3 m-0 fw-bold">@(Question.Word.Word1 ?? "No word")</p>
-                        <hr class="m-0" />
-                        <p class="text-center p-1 m-0">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
-                    </div>
-                    <div>
-                        @foreach (var item in Question.Answers)
-                        {
-                            <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled="@IsExamFinish">@item</button>
-                        }
-                    </div>
-                }
-                @if (IsValid == true)
-                {
-                    <div class="alert alert-success">
-                        <h4 class="alert-heading">Correct!</h4>
-                        <p>この単語の意味</p>
-                        <hr>
-                        @foreach (var item in Question.Word.Vocabularies)
-                        {
-                            <div class="row">
-                                <div class="col">@item.PartOfSpeech.InJapanese</div>
-                                <div class="col">@item.Meaning</div>
-                            </div>
-                        }
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-success" @onclick="NextButtonOnClick">Next</button>
-                    </div>
-                }
-                else if (IsValid == false)
-                {
-                    <div class="alert alert-danger">
-                        <h4 class="alert-heading">Incorrect!</h4>
-                    </div>
-                }
                 @if (IsExamFinish)
                 {
-                    <button type="button" class="btn-primary form-control" @onclick="GoExamResult">結果を見る</button>
+                    <button type="button" class="btn-outline-secondary form-control" @onclick="GoExamResult">結果を見る</button>
+                }
+                else
+                {
+                    @if (IsStart || Mode != "試験")
+                    {
+                        <div id="word-panel" class="text-center card">
+                            <p class="text-center h1 p-3 m-0 fw-bold">@(Question.Word.Word1 ?? "No word")</p>
+                            <hr class="m-0" />
+                            <p class="text-center p-1 m-0">@(Questions.Count == 0 ? 0 : index + 1) of @Questions.Count</p>
+                        </div>
+                        <div>
+                            @foreach (var item in Question.Answers)
+                            {
+                                <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled="@IsExamFinish">@item</button>
+                            }
+                        </div>
+                    }
+                    @if (IsValid == true)
+                    {
+                        <div class="alert alert-success">
+                            <h4 class="alert-heading">Correct!</h4>
+                            <p>この単語の意味</p>
+                            <hr>
+                            @foreach (var item in Question.Word.Vocabularies)
+                            {
+                                <div class="row">
+                                    <div class="col">@item.PartOfSpeech.InJapanese</div>
+                                    <div class="col">@item.Meaning</div>
+                                </div>
+                            }
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-success" @onclick="NextButtonOnClick">Next</button>
+                        </div>
+                    }
+                    else if (IsValid == false)
+                    {
+                        <div class="alert alert-danger">
+                            <h4 class="alert-heading">Incorrect!</h4>
+                        </div>
+                    }
                 }
             }
         }
@@ -141,7 +145,7 @@
     private bool IsStart = false;
     private bool IsExamFinish = false;
     private System.Timers.Timer Timer;
-    private TimeSpan Time = TimeSpan.FromMinutes(5);
+    private TimeSpan Time = TimeSpan.FromMinutes(2);
     private List<Models.Result> ResultList = new();
 
     private bool IsSpinner = false;
@@ -172,7 +176,7 @@
         IsValid = null;
         index = 0;
         PartOfSpeechList = db.PartOfSpeeches.ToList();
-        LevelList = db.Levels.ToList();
+        LevelList = db.Levels.Where(a => a.Id == 2).ToList();
         if (string.IsNullOrEmpty(PartOfSpeech))
             PartOfSpeech = PartOfSpeechList.First().Name;
         if (string.IsNullOrEmpty(Level))

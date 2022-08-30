@@ -10,10 +10,9 @@
   "profiles": {
     "EnglishMaster": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5011",
       "launchUrl": "EnglishMaster",
+      "applicationUrl": "http://localhost:5011",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

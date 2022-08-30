@@ -158,14 +158,14 @@
         Timer.Elapsed += (s, e) =>
         {
             InvokeAsync(() =>
-        {
-            Time = Time.Subtract(TimeSpan.FromSeconds(1));
-            if (Time == TimeSpan.Zero)
             {
-                IsExamFinish = true;
-            }
-            StateHasChanged();
-        });
+                Time = Time.Subtract(TimeSpan.FromSeconds(1));
+                if (Time == TimeSpan.Zero)
+                {
+                    IsExamFinish = true;
+                }
+                StateHasChanged();
+            });
         };
         IsSpinner = false;
     }
@@ -181,47 +181,48 @@
             PartOfSpeech = PartOfSpeechList.First().Name;
         if (string.IsNullOrEmpty(Level))
             Level = LevelList.First().Name;
+        List<Vocabulary> tmpVocabularies = db.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList();
         Questions = db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList().Select(a => new Question
+        {
+            Word = new Word
             {
-                Word = new Word
+                Id = a.Word.Id,
+                Word1 = a.Word.Word1,
+                Vocabularies = tmpVocabularies.Where(b => b.WordId == a.WordId).Select(b => new Vocabulary
                 {
-                    Id = a.Word.Id,
-                    Word1 = a.Word.Word1,
-                    Vocabularies = db.Vocabularies.Where(b => b.PartOfSpeech.Name == PartOfSpeech && b.Level.Name == Level && b.WordId == a.WordId).Select(b => new Vocabulary
+                    Id = b.Id,
+                    Meaning = b.Meaning,
+                    PartOfSpeech = new PartOfSpeech
                     {
-                        Id = b.Id,
-                        Meaning = b.Meaning,
-                        PartOfSpeech = new PartOfSpeech
-                        {
-                            Id = b.PartOfSpeech.Id,
-                            Name = b.PartOfSpeech.Name,
-                            InJapanese = b.PartOfSpeech.InJapanese
-                        },
-                        WordId = b.WordId,
-                        PartOfSpeechId = b.PartOfSpeechId
-                    }).ToList()
-                },
-                Answers = CreateAnswer(a)
-            }).CreateRandom().ToList();
+                        Id = b.PartOfSpeech.Id,
+                        Name = b.PartOfSpeech.Name,
+                        InJapanese = b.PartOfSpeech.InJapanese
+                    },
+                    WordId = b.WordId,
+                    PartOfSpeechId = b.PartOfSpeechId
+                }).ToList()
+            },
+            Answers = CreateAnswer(a,tmpVocabularies)
+        }).CreateRandom().ToList();
         if (Mode == "試験")
         {
             Questions = Questions.Take(25).ToList();
             ResultList.AddRange(Questions.Select(a => new Models.Result
-                {
-                    Word = a.Word,
-                    IsCorrect = null
-                }));
+            {
+                Word = a.Word,
+                IsCorrect = null
+            }));
         }
         if (Questions.Count <= index)
         {
             Question = new Question
+            {
+                Answers = new List<string>(),
+                Word = new Word
                 {
-                    Answers = new List<string>(),
-                    Word = new Word
-                    {
-                        Vocabularies = new List<Vocabulary>()
-                    }
-                };
+                    Vocabularies = new List<Vocabulary>()
+                }
+            };
         }
         else
         {
@@ -229,11 +230,11 @@
         }
     }
 
-    private List<string> CreateAnswer(Vocabulary vocabulary)
+    private List<string> CreateAnswer(Vocabulary vocabulary,List<Vocabulary> vocabularies)
     {
         List<string> tmp = new List<string>();
         tmp.Add(vocabulary.Meaning);
-        db.Vocabularies.Where(a => !db.Vocabularies.Where(b => b.WordId == vocabulary.WordId).Select(b => b.Meaning).Contains(a.Meaning) && a.PartOfSpeech.Name == PartOfSpeech).CreateRandom().Select(a => a.Meaning).Distinct().Take(3).ToList().ForEach(a => tmp.Add(a));
+        vocabularies.Where(a => !vocabularies.Where(b => b.WordId == vocabulary.WordId).Select(b => b.Meaning).Contains(a.Meaning) && a.PartOfSpeech.Name == PartOfSpeech).CreateRandom().Select(a => a.Meaning).Distinct().Take(3).ToList().ForEach(a => tmp.Add(a));
         return tmp.CreateRandom().ToList();
     }
 
@@ -306,9 +307,9 @@
     private void ReturnTopButtonOnClick()
     {
 #if DEBUG
-    navigationManager.NavigateTo("/EnglishMasterStage", true);
+        navigationManager.NavigateTo("/EnglishMasterStage", true);
 #else
-        navigationManager.NavigateTo("/EnglishMaster", true);
+navigationManager.NavigateTo("/EnglishMaster", true);
 #endif
     }
 

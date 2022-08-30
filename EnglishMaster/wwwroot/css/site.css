@@ -121,11 +121,11 @@ th {
     border: 1px solid #6C7D98;
 }
 
-.form-select:disabled {
-    background-color: #C6CCD7;
-    border: 1px solid #6C7D98;
-    opacity:0.5;
-}
+    .form-select:disabled {
+        background-color: #C6CCD7;
+        border: 1px solid #6C7D98;
+        opacity: 0.5;
+    }
 
 .btn-outline-secondary {
     margin: 6px 0px 0px 0px;
@@ -149,4 +149,24 @@ th {
 
 .exam-timer {
     background-color: #C6CCD7;
+}
+
+.navbar {
+    background-color: #162141;
+}
+
+.nav-link {
+    color: #C6CCD7;
+}
+
+.nav-link:hover {
+    color: #C6CCD7;
+}
+
+.navbar-brand {
+    color: #C6CCD7;
+}
+
+.navbar-brand:hover {
+    color: #C6CCD7;
 }

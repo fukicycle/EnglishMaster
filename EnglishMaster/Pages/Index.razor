@@ -148,11 +148,18 @@
     private TimeSpan Time = TimeSpan.FromMinutes(2);
     private List<Models.Result> ResultList = new();
 
+    private List<Vocabulary> Vocabularies;
+
     private bool IsSpinner = false;
 
     protected override async Task OnInitializedAsync()
     {
         IsSpinner = true;
+        Vocabularies = await db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).ToListAsync();
+        PartOfSpeechList = db.PartOfSpeeches.ToList();
+        LevelList = db.Levels.Where(a => a.Id == 2).ToList();
+        PartOfSpeech = PartOfSpeechList.First().Name;
+        Level = LevelList.First().Name;
         await Task.Run(() => Refresh());
         Timer = new System.Timers.Timer(1000);
         Timer.Elapsed += (s, e) =>
@@ -175,14 +182,9 @@
         ResultList = new();
         IsValid = null;
         index = 0;
-        PartOfSpeechList = db.PartOfSpeeches.ToList();
-        LevelList = db.Levels.Where(a => a.Id == 2).ToList();
-        if (string.IsNullOrEmpty(PartOfSpeech))
-            PartOfSpeech = PartOfSpeechList.First().Name;
-        if (string.IsNullOrEmpty(Level))
-            Level = LevelList.First().Name;
-        List<Vocabulary> tmpVocabularies = db.Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList();
-        Questions = db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList().Select(a => new Question
+        List<Vocabulary> tmpVocabularies = Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList();
+        @*Questions = db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList().Select(a => new Question*@
+        Questions = tmpVocabularies.Select(a => new Question
         {
             Word = new Word
             {
@@ -202,7 +204,7 @@
                     PartOfSpeechId = b.PartOfSpeechId
                 }).ToList()
             },
-            Answers = CreateAnswer(a,tmpVocabularies)
+            Answers = CreateAnswer(a, tmpVocabularies)
         }).CreateRandom().ToList();
         if (Mode == "試験")
         {
@@ -230,7 +232,7 @@
         }
     }
 
-    private List<string> CreateAnswer(Vocabulary vocabulary,List<Vocabulary> vocabularies)
+    private List<string> CreateAnswer(Vocabulary vocabulary, List<Vocabulary> vocabularies)
     {
         List<string> tmp = new List<string>();
         tmp.Add(vocabulary.Meaning);

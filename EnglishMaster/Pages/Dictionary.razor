@@ -1,9 +1,68 @@
 ﻿@page "/Dictionary"
+@using Microsoft.EntityFrameworkCore
+@using Models
+@inject DB db
 <h3>Dictionary</h3>
-
+<div>
+    <input type="text" @bind="text" />
+    <button @onclick="Search">Search</button>
+</div>
+@if (WordList == null)
+{
+    <div class="spinner-border text-dark"></div>
+}
+else
+{
+    <div class="panel">
+        <div>
+            @foreach (var item in WordList)
+            {
+                <p @onclick="@(() => Details(item.Id))">@item.Word1</p>
+            }
+        </div>
+        <div>
+            @if (Word == null)
+            {
+                <div>
+                </div>
+            }
+            else
+            {
+                <div>
+                    @foreach (var item1 in Word.Vocabularies)
+                    {
+                        <p>@item1.Meaning</p>
+                        <p>@item1.PartOfSpeech.InJapanese</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+<style>
+    .panel {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,100px);
+    }
+</style>
 @code {
-    protected override Task OnInitializedAsync()
+    private string text;
+    private List<Word> WordList = null;
+    private Word Word;
+
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        await Task.Run(() => WordList = db.Words.ToList());
+    }
+
+    private async Task Search()
+    {
+        WordList = null;
+        await Task.Run(() => WordList = db.Words.Where(a => a.Word1.Contains(text)).ToList());
+    }
+
+    private void Details(long id)
+    {
+        Word = db.Words.Include(a => a.Vocabularies).ThenInclude(a => a.PartOfSpeech).First(a => a.Id == id);
     }
 }

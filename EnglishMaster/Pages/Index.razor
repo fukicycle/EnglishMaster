@@ -99,6 +99,7 @@
                     }
                     @if (IsValid == true)
                     {
+                        <button style="margin:6px 0px 0px 0px;" type="button" class="btn btn-success form-control" @onclick="NextButtonOnClick">Next</button>
                         <div class="alert alert-success">
                             <h4 class="alert-heading">Correct!</h4>
                             <p>この単語の意味</p>
@@ -110,9 +111,6 @@
                                     <div class="col">@item.Meaning</div>
                                 </div>
                             }
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-success" @onclick="NextButtonOnClick">Next</button>
                         </div>
                     }
                     else if (IsValid == false)
@@ -185,46 +183,46 @@
         List<Vocabulary> tmpVocabularies = Vocabularies.Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList();
         @*Questions = db.Vocabularies.Include(a => a.Word).Include(a => a.PartOfSpeech).Where(a => a.PartOfSpeech.Name == PartOfSpeech && a.Level.Name == Level).ToList().Select(a => new Question*@
         Questions = tmpVocabularies.Select(a => new Question
-        {
-            Word = new Word
             {
-                Id = a.Word.Id,
-                Word1 = a.Word.Word1,
-                Vocabularies = tmpVocabularies.Where(b => b.WordId == a.WordId).Select(b => new Vocabulary
+                Word = new Word
                 {
-                    Id = b.Id,
-                    Meaning = b.Meaning,
-                    PartOfSpeech = new PartOfSpeech
+                    Id = a.Word.Id,
+                    Word1 = a.Word.Word1,
+                    Vocabularies = tmpVocabularies.Where(b => b.WordId == a.WordId).Select(b => new Vocabulary
                     {
-                        Id = b.PartOfSpeech.Id,
-                        Name = b.PartOfSpeech.Name,
-                        InJapanese = b.PartOfSpeech.InJapanese
-                    },
-                    WordId = b.WordId,
-                    PartOfSpeechId = b.PartOfSpeechId
-                }).ToList()
-            },
-            Answers = CreateAnswer(a, tmpVocabularies)
-        }).CreateRandom().ToList();
+                        Id = b.Id,
+                        Meaning = b.Meaning,
+                        PartOfSpeech = new PartOfSpeech
+                        {
+                            Id = b.PartOfSpeech.Id,
+                            Name = b.PartOfSpeech.Name,
+                            InJapanese = b.PartOfSpeech.InJapanese
+                        },
+                        WordId = b.WordId,
+                        PartOfSpeechId = b.PartOfSpeechId
+                    }).ToList()
+                },
+                Answers = CreateAnswer(a, tmpVocabularies)
+            }).CreateRandom().ToList();
         if (Mode == "試験")
         {
             Questions = Questions.Take(25).ToList();
             ResultList.AddRange(Questions.Select(a => new Models.Result
-            {
-                Word = a.Word,
-                IsCorrect = null
-            }));
+                {
+                    Word = a.Word,
+                    IsCorrect = null
+                }));
         }
         if (Questions.Count <= index)
         {
             Question = new Question
-            {
-                Answers = new List<string>(),
-                Word = new Word
                 {
-                    Vocabularies = new List<Vocabulary>()
-                }
-            };
+                    Answers = new List<string>(),
+                    Word = new Word
+                    {
+                        Vocabularies = new List<Vocabulary>()
+                    }
+                };
         }
         else
         {
@@ -309,9 +307,9 @@
     private void ReturnTopButtonOnClick()
     {
 #if DEBUG
-        navigationManager.NavigateTo("/EnglishMasterStage", true);
+    navigationManager.NavigateTo("/EnglishMasterStage", true);
 #else
-navigationManager.NavigateTo("/EnglishMaster", true);
+        navigationManager.NavigateTo("/EnglishMaster", true);
 #endif
     }
 

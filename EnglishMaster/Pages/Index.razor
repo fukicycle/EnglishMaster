@@ -62,7 +62,7 @@
             {
                 if (IsStart == false && Mode == "試験")
                 {
-                    <button type="button" class="btn btn-outline-secondary form-control" @onclick="StartExam">試験開始!</button>
+                    <button type="button" class="btn btn-primary form-control" @onclick="StartExam">試験開始!</button>
                 }
             }
         }
@@ -79,7 +79,7 @@
             {
                 @if (IsExamFinish)
                 {
-                    <button type="button" class="btn-outline-secondary form-control" @onclick="GoExamResult">結果を見る</button>
+                    <button type="button" class="btn-primary form-control" @onclick="GoExamResult">結果を見る</button>
                 }
                 else
                 {
@@ -93,7 +93,7 @@
                         <div>
                             @foreach (var item in Question.Answers)
                             {
-                                <button type="button" class="btn btn-outline-secondary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled="@IsExamFinish">@item</button>
+                                <button type="button" class="btn btn-primary form-control" @onclick="(e) => AnswerButtonOnClick(item)" disabled="@IsExamFinish">@item</button>
                             }
                         </div>
                     }

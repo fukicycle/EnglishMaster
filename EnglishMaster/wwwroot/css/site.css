@@ -15,12 +15,6 @@ a, .btn-link {
     color: #0071c1;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-    font-size: clamp(17px,1vw,25px);
-}
 
 .content {
     padding-top: 1.1rem;
@@ -127,7 +121,7 @@ th {
         opacity: 0.5;
     }
 
-.btn-outline-secondary {
+.btn-primary {
     margin: 6px 0px 0px 0px;
     background-color: #8A97AD;
     border-width: 0px;
@@ -135,7 +129,7 @@ th {
     font-size: clamp(17px,1vw,25px);
 }
 
-    .btn-outline-secondary:hover {
+    .btn-primary:hover {
         margin: 6px 0px 0px 0px;
         background-color: #162141;
         border-width: 0px;
@@ -159,14 +153,14 @@ th {
     color: #C6CCD7;
 }
 
-.nav-link:hover {
-    color: #C6CCD7;
-}
+    .nav-link:hover {
+        color: #C6CCD7;
+    }
 
 .navbar-brand {
     color: #C6CCD7;
 }
 
-.navbar-brand:hover {
-    color: #C6CCD7;
-}
+    .navbar-brand:hover {
+        color: #C6CCD7;
+    }

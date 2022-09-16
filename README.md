@@ -25,4 +25,5 @@
 
 ## 現在のアプリ
 * https://www.sato-home.mydns.jp/EnglishMaster
+* サーバーサイドアプリはサービスを停止しました。
 
